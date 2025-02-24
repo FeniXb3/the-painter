@@ -43,14 +43,14 @@ size_flags_horizontal = 3
 texture = ExtResource("2_fyhtr")
 stretch_mode = 2
 script = ExtResource("2_yrdmw")
-brush_size = 10
+brush_size = 100
 
 [node name="Target" type="TextureRect" parent="DrawingLayer/VBoxContainer/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 stretch_mode = 2
 script = ExtResource("2_yrdmw")
-brush_size = 10
+brush_size = 100
 
 [node name="Button" type="Button" parent="DrawingLayer/VBoxContainer"]
 layout_mode = 2
