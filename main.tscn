@@ -1,9 +1,73 @@
-[gd_scene load_steps=2 format=3 uid="uid://cse47c1bcffbc"]
+[gd_scene load_steps=4 format=3 uid="uid://cse47c1bcffbc"]
 
 [ext_resource type="PackedScene" uid="uid://c01pevtnb866j" path="res://win_screen.tscn" id="1_rt2aw"]
+[ext_resource type="Texture2D" uid="uid://dowo5xfnk0eno" path="res://icon.svg" id="2_fyhtr"]
 
-[node name="Main" type="Node2D"]
+[sub_resource type="GDScript" id="GDScript_eqtlw"]
+script/source = "extends Node2D
+
+@export var source: TextureRect
+@export var target: TextureRect
+@export var label: Label
+
+# Called when the node enters the scene tree for the first time.
+func _ready() -> void:
+	pass # Replace with function body.
+
+
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta: float) -> void:
+	pass
+
+
+func _on_button_pressed() -> void:
+	var source_image := source.texture.get_image()
+	var target_image := target.texture.get_image()
+	var metrics := source_image.compute_image_metrics(target_image, true)
+	label.text = str(metrics)
+"
+
+[node name="Main" type="Node2D" node_paths=PackedStringArray("source", "target", "label")]
+script = SubResource("GDScript_eqtlw")
+source = NodePath("DrawingLayer/VBoxContainer/HBoxContainer/Source")
+target = NodePath("DrawingLayer/VBoxContainer/HBoxContainer/Target")
+label = NodePath("DrawingLayer/VBoxContainer/Label")
+
+[node name="DrawingLayer" type="CanvasLayer" parent="."]
+
+[node name="VBoxContainer" type="VBoxContainer" parent="DrawingLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="HBoxContainer" type="HBoxContainer" parent="DrawingLayer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="Source" type="TextureRect" parent="DrawingLayer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("2_fyhtr")
+stretch_mode = 4
+
+[node name="Target" type="TextureRect" parent="DrawingLayer/VBoxContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+texture = ExtResource("2_fyhtr")
+stretch_mode = 4
+
+[node name="Button" type="Button" parent="DrawingLayer/VBoxContainer"]
+layout_mode = 2
+text = "Compare"
+
+[node name="Label" type="Label" parent="DrawingLayer/VBoxContainer"]
+layout_mode = 2
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
+visible = false
 
 [node name="WinScreen" parent="CanvasLayer" instance=ExtResource("1_rt2aw")]
+
+[connection signal="pressed" from="DrawingLayer/VBoxContainer/Button" to="." method="_on_button_pressed"]
