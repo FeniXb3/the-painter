@@ -13,7 +13,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	var mouse_position: Vector2i = get_local_mouse_position()
-	if not image.get_used_rect().has_point(mouse_position):
+	if not Rect2(Vector2(), size).has_point(mouse_position):
 		return
 	
 	if Input.is_action_pressed("draw"):
@@ -22,11 +22,17 @@ func _process(_delta: float) -> void:
 		_draw_brush_stroke(mouse_position, background_color)
 
 func _draw_brush_stroke(cursor_position: Vector2i, color: Color):
+		var proportion := Vector2(1.0, 1.0)
+		if stretch_mode == StretchMode.STRETCH_KEEP_ASPECT:
+			var min_axis := size[size.min_axis_index()]
+			proportion = image.get_size() / min_axis
+			
 		@warning_ignore("integer_division")
-		var min_range: int = -brush_size/2
-		for x in range(min_range, brush_size - min_range):
-			for y in range(min_range, brush_size - min_range):
-				var pixel_position := cursor_position + Vector2i(x, y)
+		var min_range: int = brush_size/2
+		for x in range(-min_range, brush_size - min_range):
+			for y in range(-min_range, brush_size - min_range):
+				var pixel_position := Vector2(cursor_position)*proportion + Vector2(x, y)
 				pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
 				image.set_pixelv(pixel_position, color)
+				
 		texture = ImageTexture.create_from_image(image)
