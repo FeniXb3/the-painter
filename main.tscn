@@ -38,17 +38,19 @@ layout_mode = 2
 size_flags_vertical = 3
 
 [node name="Source" type="TextureRect" parent="DrawingLayer/VBoxContainer/HBoxContainer"]
+texture_filter = 1
 layout_mode = 2
 size_flags_horizontal = 3
 texture = ExtResource("2_fyhtr")
-stretch_mode = 2
+stretch_mode = 4
 script = ExtResource("2_yrdmw")
 brush_size = 10
 
 [node name="Target" type="TextureRect" parent="DrawingLayer/VBoxContainer/HBoxContainer"]
+texture_filter = 1
 layout_mode = 2
 size_flags_horizontal = 3
-stretch_mode = 2
+stretch_mode = 4
 script = ExtResource("2_yrdmw")
 brush_size = 10
 

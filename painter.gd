@@ -10,18 +10,24 @@ func _ready() -> void:
 	texture = ImageTexture.create_from_image(image)
 
 
-func _process(delta: float) -> void:
+func _process(_delta: float) -> void:
 	var mouse_position: Vector2i = get_local_mouse_position()
-	if mouse_position.x < 0 or mouse_position.y < 0 or mouse_position.x >= image.get_size().x or mouse_position.y >= image.get_size().y:
+	if not Rect2(Vector2(), size).has_point(mouse_position):
 		return
 		
 	if Input.is_action_pressed("draw"):
 		draw_brush(mouse_position)
 		
-func draw_brush(brush_position: Vector2i):
+func draw_brush(brush_position: Vector2):
+	var proportion := Vector2(1, 1)
+	if stretch_mode == StretchMode.STRETCH_KEEP_ASPECT:
+		var min_axis_index := size.min_axis_index()
+		proportion = image.get_size() / size[min_axis_index]
+	
+	
 	for x in brush_size:
 		for y in brush_size:
-			var pixel_position := brush_position + Vector2i(x-brush_size/2, y - brush_size/2)
+			var pixel_position := brush_position * proportion + Vector2(x-brush_size/2, y - brush_size/2)
 			pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
 			image.set_pixelv(pixel_position, Color.BLACK)
 	texture = ImageTexture.create_from_image(image)
