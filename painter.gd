@@ -31,6 +31,7 @@ func draw_brush(brush_position: Vector2, color: Color):
 	
 	for x in brush_size:
 		for y in brush_size:
+			@warning_ignore("integer_division")
 			var pixel_position := brush_position * proportion + Vector2(x-brush_size/2, y - brush_size/2)
 			pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
 			image.set_pixelv(pixel_position, color)
