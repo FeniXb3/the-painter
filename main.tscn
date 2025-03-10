@@ -60,6 +60,7 @@ text = "Compare"
 
 [node name="Label" type="Label" parent="DrawingLayer/VBoxContainer"]
 layout_mode = 2
+autowrap_mode = 3
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 visible = false
