@@ -16,7 +16,12 @@ func _process(delta: float) -> void:
 		return
 		
 	if Input.is_action_pressed("draw"):
-		for x in brush_size:
-			for y in brush_size:
-				image.set_pixelv(mouse_position + Vector2i(x-brush_size/2, y - brush_size/2), Color.BLACK)
-		texture = ImageTexture.create_from_image(image)
+		draw_brush(mouse_position)
+		
+func draw_brush(brush_position: Vector2i):
+	for x in brush_size:
+		for y in brush_size:
+			var pixel_position := brush_position + Vector2i(x-brush_size/2, y - brush_size/2)
+			pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
+			image.set_pixelv(pixel_position, Color.BLACK)
+	texture = ImageTexture.create_from_image(image)
