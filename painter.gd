@@ -2,10 +2,15 @@
 extends TextureRect
 
 @export var image_size := Vector2i(128, 128)
-@export_range(1, 10) var brush_size := 4
+@export_range(1, 10) var brush_size : float = 4
 @export var background_color := Color.WHITE
 @export var brush_color := Color.BLACK
+@export var brush_texture: Texture2D:
+	set(value):
+		brush_texture = value
+		brush_image = brush_texture.get_image()
 var image: Image
+var brush_image: Image
 
 func _ready() -> void:
 	image = Image.create(image_size.x, image_size.y, false, Image.FORMAT_RGBA8)
@@ -38,8 +43,11 @@ func draw_brush(brush_position: Vector2, color: Color):
 	
 	for x in brush_size:
 		for y in brush_size:
+			var brush_texture_x = (x/brush_size) * brush_image.get_width()
+			var brush_texture_y := (y/brush_size) * brush_image.get_height()
+			var brush_pixel := brush_image.get_pixel(brush_texture_x, brush_texture_y)
 			@warning_ignore("integer_division")
 			var pixel_position := brush_position * proportion + Vector2(x-brush_size/2, y - brush_size/2)
 			pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
-			image.set_pixelv(pixel_position, color)
+			image.set_pixelv(pixel_position, brush_pixel)
 	texture = ImageTexture.create_from_image(image)
