@@ -25,16 +25,24 @@ func _process(_delta: float) -> void:
 		
 	if Engine.is_editor_hint():
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			draw_brush(mouse_position, brush_color)
+			draw_brush(mouse_position, get_brush_texture_pixel)
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-			draw_brush(mouse_position, background_color)
+			draw_brush(mouse_position, get_erase_color)
 	else:
 		if Input.is_action_pressed("draw"):
-			draw_brush(mouse_position, brush_color)
+			draw_brush(mouse_position, get_brush_texture_pixel)
 		if Input.is_action_pressed("erase"):
-			draw_brush(mouse_position, background_color)
+			draw_brush(mouse_position, get_erase_color)
 		
-func draw_brush(brush_position: Vector2, color: Color):
+func get_brush_texture_pixel(x, y):
+	var brush_texture_x = (x/brush_size) * brush_image.get_width()
+	var brush_texture_y = (y/brush_size) * brush_image.get_height()
+	return brush_image.get_pixel(brush_texture_x, brush_texture_y)
+	
+func get_erase_color(_x, _y):
+	return background_color
+
+func draw_brush(brush_position: Vector2, pixel_getter: Callable):
 	var proportion := Vector2(1, 1)
 	if stretch_mode == StretchMode.STRETCH_KEEP_ASPECT:
 		var min_axis_index := size.min_axis_index()
@@ -43,9 +51,7 @@ func draw_brush(brush_position: Vector2, color: Color):
 	
 	for x in brush_size:
 		for y in brush_size:
-			var brush_texture_x = (x/brush_size) * brush_image.get_width()
-			var brush_texture_y := (y/brush_size) * brush_image.get_height()
-			var brush_pixel := brush_image.get_pixel(brush_texture_x, brush_texture_y)
+			var brush_pixel = pixel_getter.call(x, y)
 			@warning_ignore("integer_division")
 			var pixel_position := brush_position * proportion + Vector2(x-brush_size/2, y - brush_size/2)
 			pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
