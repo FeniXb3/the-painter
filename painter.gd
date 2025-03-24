@@ -1,3 +1,4 @@
+@tool
 extends TextureRect
 
 @export var image_size := Vector2i(128, 128)
@@ -17,10 +18,16 @@ func _process(_delta: float) -> void:
 	if not Rect2(Vector2(), size).has_point(mouse_position):
 		return
 		
-	if Input.is_action_pressed("draw"):
-		draw_brush(mouse_position, brush_color)
-	if Input.is_action_pressed("erase"):
-		draw_brush(mouse_position, background_color)
+	if Engine.is_editor_hint():
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
+			draw_brush(mouse_position, brush_color)
+		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
+			draw_brush(mouse_position, background_color)
+	else:
+		if Input.is_action_pressed("draw"):
+			draw_brush(mouse_position, brush_color)
+		if Input.is_action_pressed("erase"):
+			draw_brush(mouse_position, background_color)
 		
 func draw_brush(brush_position: Vector2, color: Color):
 	var proportion := Vector2(1, 1)
