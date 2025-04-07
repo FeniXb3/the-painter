@@ -69,7 +69,11 @@ func draw_brush(brush_position: Vector2, pixel_getter: Callable):
 			@warning_ignore("integer_division")
 			var pixel_position := brush_position * proportion + Vector2(x-brush_size/2, y - brush_size/2)
 			pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
-			image.set_pixelv(pixel_position, brush_pixel)
+			
+			var current_pixel_color := image.get_pixelv(pixel_position)
+			var color_to_set := Color(lerp(current_pixel_color, brush_pixel, brush_pixel.a), 1)
+			
+			image.set_pixelv(pixel_position, color_to_set)
 	texture = ImageTexture.create_from_image(image)
 
 
