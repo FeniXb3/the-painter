@@ -1,8 +1,7 @@
-[gd_scene load_steps=9 format=3 uid="uid://cse47c1bcffbc"]
+[gd_scene load_steps=8 format=3 uid="uid://cse47c1bcffbc"]
 
+[ext_resource type="PackedScene" uid="uid://d0rdut5eilbsl" path="res://painter.tscn" id="1_0xm2m"]
 [ext_resource type="PackedScene" uid="uid://c01pevtnb866j" path="res://win_screen.tscn" id="1_rt2aw"]
-[ext_resource type="Texture2D" uid="uid://dowo5xfnk0eno" path="res://icon.svg" id="2_fyhtr"]
-[ext_resource type="Script" uid="uid://b14xpbhks3ckr" path="res://painter.gd" id="2_yrdmw"]
 
 [sub_resource type="GDScript" id="GDScript_eqtlw"]
 script/source = "extends Node2D
@@ -42,10 +41,8 @@ data = {
 [sub_resource type="ImageTexture" id="ImageTexture_7mycd"]
 image = SubResource("Image_lquwl")
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("source", "target", "label")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("label")]
 script = SubResource("GDScript_eqtlw")
-source = NodePath("DrawingLayer/VBoxContainer/HBoxContainer/Source")
-target = NodePath("DrawingLayer/VBoxContainer/HBoxContainer/Target")
 label = NodePath("DrawingLayer/VBoxContainer/Label")
 
 [node name="DrawingLayer" type="CanvasLayer" parent="."]
@@ -61,25 +58,13 @@ grow_vertical = 2
 layout_mode = 2
 size_flags_vertical = 3
 
-[node name="Source" type="TextureRect" parent="DrawingLayer/VBoxContainer/HBoxContainer"]
-texture_filter = 1
+[node name="Source" parent="DrawingLayer/VBoxContainer/HBoxContainer" instance=ExtResource("1_0xm2m")]
 layout_mode = 2
-size_flags_horizontal = 3
 texture = SubResource("ImageTexture_1bvp3")
-stretch_mode = 4
-script = ExtResource("2_yrdmw")
-brush_size = 10.0
-brush_texture = ExtResource("2_fyhtr")
 
-[node name="Target" type="TextureRect" parent="DrawingLayer/VBoxContainer/HBoxContainer"]
-texture_filter = 1
+[node name="Target" parent="DrawingLayer/VBoxContainer/HBoxContainer" instance=ExtResource("1_0xm2m")]
 layout_mode = 2
-size_flags_horizontal = 3
 texture = SubResource("ImageTexture_7mycd")
-stretch_mode = 4
-script = ExtResource("2_yrdmw")
-brush_size = 10.0
-brush_texture = ExtResource("2_fyhtr")
 
 [node name="Button" type="Button" parent="DrawingLayer/VBoxContainer"]
 layout_mode = 2
