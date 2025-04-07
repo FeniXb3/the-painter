@@ -62,7 +62,10 @@ func draw_brush(brush_position: Vector2, pixel_getter: Callable):
 	
 	for x in brush_size:
 		for y in brush_size:
-			var brush_pixel = pixel_getter.call(x, y)
+			var brush_pixel: Color = pixel_getter.call(x, y)
+			if is_zero_approx(brush_pixel.a):
+				continue
+				
 			@warning_ignore("integer_division")
 			var pixel_position := brush_position * proportion + Vector2(x-brush_size/2, y - brush_size/2)
 			pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
