@@ -1,4 +1,3 @@
-@tool
 extends TextureRect
 
 @export var image_size := Vector2i(128, 128)
