@@ -13,6 +13,9 @@ var image: Image
 var brush_image: Image
 var is_active: bool = false
 
+var operation_history: Array[Command]
+var latest_operation_index: int
+
 func _ready() -> void:
 	image = Image.create(image_size.x, image_size.y, false, Image.FORMAT_RGBA8)
 	image.fill(background_color)
@@ -26,6 +29,23 @@ func _input(event: InputEvent) -> void:
 		brush_size += brush_increment_step
 	elif event.is_action_pressed("decrease_brush_size"):
 		brush_size -= brush_increment_step
+	elif event.is_action_pressed("undo"):
+		if abs(latest_operation_index) <= operation_history.size(): 
+			var last_operation = operation_history[latest_operation_index]
+			if last_operation != null:
+				last_operation.undo()
+				latest_operation_index -= 1
+	elif event.is_action_pressed("redo"):
+		if operation_history.is_empty() or latest_operation_index == -1:
+			return
+		
+		latest_operation_index += 1
+		var operation_to_redo = operation_history[latest_operation_index]
+		if operation_to_redo == null:
+			return
+		
+		operation_to_redo.execute()
+		
 
 
 func _process(_delta: float) -> void:
@@ -33,10 +53,22 @@ func _process(_delta: float) -> void:
 	if not Rect2(Vector2(), size).has_point(mouse_position):
 		return
 		
-	if Input.is_action_pressed("draw"):
-		draw_brush(mouse_position, get_brush_texture_pixel)
+	if Input.is_action_just_pressed("draw"):
+		var draw_command = DrawBrushCommand.new(self, image, brush_size, mouse_position, get_brush_texture_pixel)
+		if not operation_history.is_empty():
+			operation_history.resize(operation_history.size() + latest_operation_index + 1)
+		operation_history.append(draw_command)
+		print(operation_history)
+		latest_operation_index = -1
+		draw_command.execute()
 	if Input.is_action_pressed("erase"):
-		draw_brush(mouse_position, get_erase_color)
+		var draw_command = DrawBrushCommand.new(self, image, brush_size, mouse_position, get_erase_color)
+		if not operation_history.is_empty():
+			operation_history.resize(operation_history.size() + latest_operation_index + 1)
+		operation_history.append(draw_command)
+		print(operation_history)
+		latest_operation_index = -1
+		draw_command.execute()
 		
 func get_brush_texture_pixel(x, y):
 	var brush_texture_x = (x/brush_size) * brush_image.get_width()
@@ -45,29 +77,6 @@ func get_brush_texture_pixel(x, y):
 	
 func get_erase_color(_x, _y):
 	return background_color
-
-func draw_brush(brush_position: Vector2, pixel_getter: Callable):
-	var proportion := Vector2(1, 1)
-	if stretch_mode == StretchMode.STRETCH_KEEP_ASPECT:
-		var min_axis_index := size.min_axis_index()
-		proportion = image.get_size() / size[min_axis_index]
-	
-	
-	for x in brush_size:
-		for y in brush_size:
-			var brush_pixel: Color = pixel_getter.call(x, y)
-			if is_zero_approx(brush_pixel.a):
-				continue
-				
-			@warning_ignore("integer_division")
-			var pixel_position := brush_position * proportion + Vector2(x-brush_size/2, y - brush_size/2)
-			pixel_position = pixel_position.clamp(Vector2i(), image.get_size() - Vector2i(1, 1))
-			
-			var current_pixel_color := image.get_pixelv(pixel_position)
-			var color_to_set := Color(lerp(current_pixel_color, brush_pixel, brush_pixel.a), 1)
-			
-			image.set_pixelv(pixel_position, color_to_set)
-	texture = ImageTexture.create_from_image(image)
 
 
 func _on_mouse_entered() -> void:
