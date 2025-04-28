@@ -14,6 +14,9 @@ var image: Image
 var brush_image: Image
 var is_active: bool = false
 
+var command_history: Array[Command]
+var undo_history: Array[Command]
+
 func _ready() -> void:
 	image = Image.create(image_size.x, image_size.y, false, Image.FORMAT_RGBA8)
 	image.fill(background_color)
@@ -31,19 +34,28 @@ func _input(event: InputEvent) -> void:
 
 func _process(_delta: float) -> void:
 	var mouse_position: Vector2i = get_local_mouse_position()
-	if not Rect2(Vector2(), size).has_point(mouse_position):
+	if not is_active or not Rect2(Vector2(), size).has_point(mouse_position):
 		return
 		
 	if Engine.is_editor_hint():
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			draw_brush(mouse_position, get_brush_texture_pixel)
+			#draw_brush(mouse_position, get_brush_texture_pixel)
+			var draw_command = DrawBrushCommand.new(self, image, brush_size, mouse_position, get_brush_texture_pixel)
+			command_history.append(draw_command)
+			draw_command.execute()
 		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
 			draw_brush(mouse_position, get_erase_color)
 	else:
-		if Input.is_action_pressed("draw"):
-			draw_brush(mouse_position, get_brush_texture_pixel)
+		if Input.is_action_just_pressed("draw"):
+			#draw_brush(mouse_position, get_brush_texture_pixel)
+			var draw_command = DrawBrushCommand.new(self, image, brush_size, mouse_position, get_brush_texture_pixel)
+			command_history.append(draw_command)
+			draw_command.execute()
 		if Input.is_action_pressed("erase"):
 			draw_brush(mouse_position, get_erase_color)
+		if Input.is_action_just_pressed("undo"):
+			if not command_history.is_empty():
+				command_history.pop_back().undo()
 		
 func get_brush_texture_pixel(x, y):
 	var brush_texture_x = (x/brush_size) * brush_image.get_width()
