@@ -33,16 +33,10 @@ func _process(_delta: float) -> void:
 	if not Rect2(Vector2(), size).has_point(mouse_position):
 		return
 		
-	if Engine.is_editor_hint():
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT):
-			draw_brush(mouse_position, get_brush_texture_pixel)
-		if Input.is_mouse_button_pressed(MOUSE_BUTTON_RIGHT):
-			draw_brush(mouse_position, get_erase_color)
-	else:
-		if Input.is_action_pressed("draw"):
-			draw_brush(mouse_position, get_brush_texture_pixel)
-		if Input.is_action_pressed("erase"):
-			draw_brush(mouse_position, get_erase_color)
+	if Input.is_action_pressed("draw"):
+		draw_brush(mouse_position, get_brush_texture_pixel)
+	if Input.is_action_pressed("erase"):
+		draw_brush(mouse_position, get_erase_color)
 		
 func get_brush_texture_pixel(x, y):
 	var brush_texture_x = (x/brush_size) * brush_image.get_width()
