@@ -50,7 +50,7 @@ func _input(event: InputEvent) -> void:
 
 func _process(_delta: float) -> void:
 	var mouse_position: Vector2i = get_local_mouse_position()
-	if not Rect2(Vector2(), size).has_point(mouse_position):
+	if not is_active:
 		return
 		
 	if Input.is_action_just_pressed("draw"):

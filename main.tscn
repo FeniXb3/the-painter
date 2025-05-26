@@ -24,7 +24,6 @@ func _on_file_dialog_file_selected(path: String) -> void:
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed(\"load_brush\"):
 		brush_image_file_dialog.popup()
-		
 "
 
 [node name="Main" type="Node2D" node_paths=PackedStringArray("source", "target", "label", "brush_image_file_dialog")]
