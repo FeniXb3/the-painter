@@ -9,19 +9,30 @@ script/source = "extends Node2D
 @export var source: TextureRect
 @export var target: TextureRect
 @export var label: Label
+@export var brush_image_file_dialog: FileDialog
 
 func _on_button_pressed() -> void:
 	var source_image := source.texture.get_image()
 	var target_image := target.texture.get_image()
 	var metrics := source_image.compute_image_metrics(target_image, true)
 	label.text = str(metrics)
+
+
+func _on_file_dialog_file_selected(path: String) -> void:
+	source.brush_image = Image.load_from_file(path)
+	
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed(\"load_brush\"):
+		brush_image_file_dialog.popup()
+		
 "
 
-[node name="Main" type="Node2D" node_paths=PackedStringArray("source", "target", "label")]
+[node name="Main" type="Node2D" node_paths=PackedStringArray("source", "target", "label", "brush_image_file_dialog")]
 script = SubResource("GDScript_eqtlw")
 source = NodePath("DrawingLayer/VBoxContainer/HBoxContainer/Source")
 target = NodePath("DrawingLayer/VBoxContainer/HBoxContainer/Target")
 label = NodePath("DrawingLayer/VBoxContainer/Label")
+brush_image_file_dialog = NodePath("BrushImageFileDialog")
 
 [node name="DrawingLayer" type="CanvasLayer" parent="."]
 
@@ -55,4 +66,13 @@ visible = false
 
 [node name="WinScreen" parent="CanvasLayer" instance=ExtResource("1_rt2aw")]
 
+[node name="BrushImageFileDialog" type="FileDialog" parent="."]
+title = "Open a File"
+position = Vector2i(0, 36)
+ok_button_text = "Open"
+file_mode = 0
+access = 2
+filters = PackedStringArray("*.png,*.jpg")
+
 [connection signal="pressed" from="DrawingLayer/VBoxContainer/Button" to="." method="_on_button_pressed"]
+[connection signal="file_selected" from="BrushImageFileDialog" to="." method="_on_file_dialog_file_selected"]
